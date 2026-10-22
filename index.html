@@ -445,7 +445,7 @@ function enviar(datos){
   if (!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL)) return Promise.reject(new Error('Falta configurar la URL del Apps Script'));
   const ctrl = new AbortController();
   const limite = setTimeout(() => ctrl.abort(), 60000);
-  return fetch(SCRIPT_URL, {method: 'POST', body: new URLSearchParams(datos), signal: ctrl.signal})
+  return fetch(SCRIPT_URL, {method: 'POST', body: new URLSearchParams(datos), signal: ctrl.signal, keepalive: true})
     .finally(() => clearTimeout(limite))
     .then(r => r.json())
     .then(j => { if (!j.ok) throw new Error(j.error || 'No se pudo guardar'); return j; });
@@ -479,7 +479,11 @@ form.addEventListener('submit', async e => {
   const espera = document.getElementById('espera');
   const tEspera = setTimeout(() => espera.classList.add('on'), 2500);
   try {
-    await enviar(datos);
+    // El envio sigue aunque se cierre la pagina (keepalive). Si Google tarda, celebramos
+    // a los pocos segundos y solo avisamos si al final hubo un error.
+    const envio = enviar(datos);
+    const rapido = await Promise.race([envio.then(() => 'ok'), new Promise(r => setTimeout(() => r('lento'), 3500))]);
+    if (rapido === 'lento') envio.catch(() => aviso('No pudimos confirmar tu registro. Intenta enviarlo de nuevo.'));
     celebrar(datos.nombre.split(' ')[0]);
   } catch (err) {
     aviso(err && err.message === 'Falta configurar la URL del Apps Script'
