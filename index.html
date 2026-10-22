@@ -105,7 +105,8 @@
   body.listo .campo:nth-of-type(1){animation-delay:.55s}
   body.listo .fila .campo:nth-of-type(2){animation-delay:.65s}
   body.listo .c-empresa{animation-delay:.75s!important}
-  body.listo .c-correo{animation-delay:.85s!important}
+  body.listo .c-puesto{animation-delay:.85s!important}
+  body.listo .c-correo{animation-delay:.95s!important}
   .campo input{
     width:100%;height:58px;border:1.6px solid var(--line);border-radius:15px;background:#fff;
     padding:22px 40px 6px 44px;font:500 16px/1 'Inter',sans-serif;color:var(--ink);outline:none;
@@ -137,7 +138,7 @@
     display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s, box-shadow .25s, filter .25s;
     opacity:0;transform:translateY(16px)
   }
-  body.listo .btn{animation:subir .6s .95s cubic-bezier(.2,.9,.3,1) forwards}
+  body.listo .btn{animation:subir .6s 1.05s cubic-bezier(.2,.9,.3,1) forwards}
   .btn:active{transform:scale(.97)!important}
   .btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
               background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:brillo 3.2s 2.4s infinite}
@@ -231,7 +232,7 @@
       </svg>
       <div class="gauge-marca">THE PEOPLE COMPANY</div>
     </div>
-    <div class="contador"><span class="pts" id="pts"><i></i><i></i><i></i><i></i></span><span><b id="cuenta">0</b> de 4 datos listos</span></div>
+    <div class="contador"><span class="pts" id="pts"><i></i><i></i><i></i><i></i><i></i></span><span><b id="cuenta">0</b> de 5 datos listos</span></div>
   </header>
 
   <section class="tarjeta">
@@ -262,6 +263,13 @@
         <label for="empresa">Nombre de la empresa<span class="req">*</span></label>
         <svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#37C4F3"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <div class="msg">Escribe el nombre de tu empresa</div>
+      </div>
+      <div class="campo c-puesto" data-tipo="texto">
+        <input id="puesto" name="puesto" type="text" placeholder=" " autocomplete="organization-title" maxlength="100" required>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17.5c.8-2 2.5-3 4.5-3s3.7 1 4.5 3M10 3v2h4V3"/></svg>
+        <label for="puesto">Puesto<span class="req">*</span></label>
+        <svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#37C4F3"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="msg">Escribe tu puesto, por ejemplo Gerente de Ventas</div>
       </div>
       <div class="campo c-correo" data-tipo="correo">
         <input id="correo" name="correo" type="email" inputmode="email" placeholder=" " autocomplete="email" maxlength="120" autocapitalize="off" spellcheck="false" required>
@@ -416,7 +424,7 @@ function actualizar(){
   const listos = campos.filter(valido).length;
   document.getElementById('cuenta').textContent = listos;
   [...document.querySelectorAll('#pts i')].forEach((p, i) => p.classList.toggle('on', i < listos));
-  document.getElementById('prog').style.strokeDashoffset = 420 - 420 * (listos / 4);
+  document.getElementById('prog').style.strokeDashoffset = 420 - 420 * (listos / campos.length);
 }
 campos.forEach(c => {
   const inp = c.querySelector('input');
@@ -472,6 +480,7 @@ form.addEventListener('submit', async e => {
     nombre: titulo(form.nombre.value),
     apellido: titulo(form.apellido.value),
     empresa: limpio(form.empresa.value),
+    puesto: limpio(form.puesto.value),
     correo: form.correo.value.trim().toLowerCase()
   };
   const btn = document.getElementById('btn');
