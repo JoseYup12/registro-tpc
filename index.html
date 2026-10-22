@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E8192C">
+<title>The People Company | Registro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#E8192C; --red-dark:#B30F1F; --red-soft:#FDE7E9;
+    --blue:#37C4F3; --blue-soft:#E3F6FD;
+    --ink:#15171C; --muted:#6B7280; --line:#E6E8EC;
+    --paper:#FFFFFF; --mist:#F5F7FA;
+    --ok:#12B76A;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--ink); background:var(--mist); overflow-x:hidden;
+    min-height:100dvh;
+  }
+
+  /* ---------- fondo vivo: red de personas ---------- */
+  #red{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.55;z-index:0;pointer-events:none;animation:flotar 14s ease-in-out infinite alternate}
+  .blob.b1{width:340px;height:340px;background:var(--red-soft);top:-90px;left:-110px}
+  .blob.b2{width:300px;height:300px;background:var(--blue-soft);bottom:-80px;right:-90px;animation-delay:-5s}
+  .blob.b3{width:200px;height:200px;background:#FFE3E6;bottom:30%;left:-80px;animation-delay:-9s;opacity:.4}
+  @keyframes flotar{to{transform:translate(40px,30px) scale(1.12)}}
+
+  /* ---------- intro ---------- */
+  #intro{
+    position:fixed;inset:0;z-index:50;background:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    transition:opacity .7s ease, visibility .7s;
+  }
+  #intro.fuera{opacity:0;visibility:hidden}
+  .onda{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;
+        border:2px solid var(--red);opacity:0;animation:onda 2.4s ease-out infinite}
+  .onda:nth-child(2){animation-delay:.6s}.onda:nth-child(3){animation-delay:1.2s}
+  @keyframes onda{0%{transform:scale(.4);opacity:.55}100%{transform:scale(5);opacity:0}}
+  .logo-intro{position:relative;width:min(78vw,340px)}
+  .logo-intro .arco{stroke-dasharray:420;stroke-dashoffset:420;animation:trazo 1.1s .2s cubic-bezier(.65,0,.35,1) forwards}
+  @keyframes trazo{to{stroke-dashoffset:0}}
+  .marca{display:flex;justify-content:center;gap:.02em;font-weight:900;color:var(--red);
+         font-size:min(6.6vw,29px);letter-spacing:-.01em;margin-top:-6px}
+  .marca span{display:inline-block;opacity:0;transform:translateY(22px) rotate(8deg);animation:letra .55s cubic-bezier(.2,1.4,.4,1) forwards}
+  @keyframes letra{to{opacity:1;transform:none}}
+  .intro-sub{font-size:13px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);
+             opacity:0;animation:aparecer .6s 1.9s forwards}
+  .personas{display:flex;gap:10px;margin-top:6px}
+  .personas svg{width:22px;height:22px;opacity:0;transform:scale(.3);animation:pop .45s cubic-bezier(.2,1.6,.4,1) forwards}
+  @keyframes pop{to{opacity:1;transform:none}}
+  @keyframes aparecer{to{opacity:1}}
+  .saltar{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom));font-size:12px;color:#9AA0A8;letter-spacing:.08em;
+          opacity:0;animation:aparecer .4s 1.2s forwards}
+
+  /* ---------- pagina ---------- */
+  main{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:22px 16px calc(36px + env(safe-area-inset-bottom))}
+  header{display:flex;flex-direction:column;align-items:center;text-align:center;opacity:0;transform:translateY(-14px)}
+  body.listo header{animation:bajar .8s .05s cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes bajar{to{opacity:1;transform:none}}
+  .gauge{position:relative;width:270px}
+  .gauge svg{width:100%;display:block;overflow:visible}
+  .gauge .fondo-arco{stroke:#F0D3D6}
+  .gauge .prog{stroke-dasharray:420;stroke-dashoffset:420;transition:stroke-dashoffset .8s cubic-bezier(.3,1.3,.5,1)}
+  .gauge .punta{transition:transform .8s cubic-bezier(.3,1.3,.5,1)}
+  .gauge-marca{font-weight:900;color:var(--red);font-size:22px;letter-spacing:-.01em;margin-top:-4px;white-space:nowrap}
+  .contador{margin-top:10px;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted);
+            background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:99px;box-shadow:0 2px 10px rgba(21,23,28,.04)}
+  .contador b{color:var(--red);font-variant-numeric:tabular-nums}
+  .contador .pts{display:flex;gap:4px}
+  .contador .pts i{width:7px;height:7px;border-radius:50%;background:#E2E4E8;transition:background .3s, transform .3s}
+  .contador .pts i.on{background:var(--red);transform:scale(1.25)}
+
+  .tarjeta{
+    margin-top:22px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(230,232,236,.9);border-radius:var(--radius);
+    box-shadow:0 24px 60px -18px rgba(232,25,44,.22),0 8px 24px -12px rgba(21,23,28,.12);
+    padding:26px 20px 22px;opacity:0;transform:translateY(40px) scale(.97);position:relative;overflow:hidden
+  }
+  body.listo .tarjeta{animation:subir .9s .25s cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes subir{to{opacity:1;transform:none}}
+  .tarjeta::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--red),#FF5A6A 55%,var(--blue))}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+        color:var(--red);background:var(--red-soft);padding:6px 11px;border-radius:99px}
+  .chip .vivo{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(232,25,44,.6);animation:latido 1.6s infinite}
+  @keyframes latido{70%{box-shadow:0 0 0 9px rgba(232,25,44,0)}100%{box-shadow:0 0 0 0 rgba(232,25,44,0)}}
+  h1{font-size:27px;line-height:1.12;font-weight:850;letter-spacing:-.03em;margin:14px 0 8px}
+  h1 em{font-style:normal;color:var(--red);position:relative;white-space:nowrap}
+  h1 em::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:8px;background:var(--blue);opacity:.28;border-radius:4px;z-index:-1;
+               transform:scaleX(0);transform-origin:left;animation:subraya .7s 1.1s cubic-bezier(.6,0,.2,1) forwards}
+  @keyframes subraya{to{transform:scaleX(1)}}
+  .intro-txt{color:var(--muted);font-size:14.5px;line-height:1.55;margin-bottom:20px}
+
+  form{display:grid;gap:14px}
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .campo{position:relative;opacity:0;transform:translateY(16px)}
+  body.listo .campo{animation:subir .6s cubic-bezier(.2,.9,.3,1) forwards}
+  body.listo .campo:nth-of-type(1){animation-delay:.55s}
+  body.listo .fila .campo:nth-of-type(2){animation-delay:.65s}
+  body.listo .c-empresa{animation-delay:.75s!important}
+  body.listo .c-correo{animation-delay:.85s!important}
+  .campo input{
+    width:100%;height:58px;border:1.6px solid var(--line);border-radius:15px;background:#fff;
+    padding:22px 40px 6px 44px;font:500 16px/1 'Inter',sans-serif;color:var(--ink);outline:none;
+    transition:border-color .25s, box-shadow .25s, background .25s;
+  }
+  .campo label{position:absolute;left:44px;top:29px;transform:translateY(-50%);font-size:15px;color:#8A9099;pointer-events:none;
+               transition:all .22s cubic-bezier(.3,.8,.4,1);white-space:nowrap}
+  .campo label .req{color:var(--red);margin-left:2px}
+  .campo .ico{position:absolute;left:14px;top:29px;transform:translateY(-50%);width:20px;height:20px;color:#A3A9B2;transition:color .25s, transform .3s}
+  .campo .chk{position:absolute;right:13px;top:29px;width:22px;height:22px;transform:translateY(-50%) scale(0);transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
+  .campo input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(232,25,44,.12)}
+  .campo input:focus ~ .ico{color:var(--red);transform:translateY(-50%) scale(1.1)}
+  .campo input:focus ~ label,.campo input:not(:placeholder-shown) ~ label{top:15px;transform:none;font-size:11.5px;font-weight:600;color:var(--red);letter-spacing:.02em}
+  .campo.ok input{border-color:#BFE9F9;background:#FBFEFF}
+  .campo.ok .ico{color:var(--blue)}
+  .campo.ok .chk{transform:translateY(-50%) scale(1)}
+  .campo.error input{border-color:var(--red);background:#FFF7F8}
+  .campo.error input{animation:temblar .42s}
+  @keyframes temblar{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+  .msg{font-size:12px;color:var(--red);font-weight:600;margin:6px 0 0 6px;min-height:0;max-height:0;overflow:hidden;transition:max-height .25s}
+  .campo.error .msg{max-height:30px}
+  .trampa{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+
+  .btn{
+    position:relative;margin-top:6px;height:60px;border:0;border-radius:16px;cursor:pointer;overflow:hidden;
+    font:800 16.5px 'Inter',sans-serif;letter-spacing:.01em;color:#fff;
+    background:linear-gradient(135deg,#FF3346 0%,var(--red) 45%,var(--red-dark) 100%);
+    box-shadow:0 14px 30px -10px rgba(232,25,44,.6);
+    display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s, box-shadow .25s, filter .25s;
+    opacity:0;transform:translateY(16px)
+  }
+  body.listo .btn{animation:subir .6s .95s cubic-bezier(.2,.9,.3,1) forwards}
+  .btn:active{transform:scale(.97)!important}
+  .btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+              background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:brillo 3.2s 2.4s infinite}
+  @keyframes brillo{0%{left:-60%}35%,100%{left:130%}}
+  .btn svg{width:20px;height:20px;transition:transform .3s}
+  .btn:hover svg{transform:translateX(4px)}
+  .btn .spin{display:none;width:24px;height:24px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:girar .8s linear infinite}
+  .btn.cargando .txt,.btn.cargando svg{display:none}
+  .btn.cargando .spin{display:block}
+  .btn.cargando{filter:saturate(.85);pointer-events:none}
+  @keyframes girar{to{transform:rotate(360deg)}}
+  .privado{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:#9AA0A8;margin-top:12px}
+  .privado svg{width:13px;height:13px}
+
+  .paises{margin-top:26px;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);
+          -webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);opacity:0}
+  body.listo .paises{animation:aparecer .8s 1.3s forwards}
+  .paises .pista{display:flex;gap:26px;width:max-content;animation:desliza 26s linear infinite}
+  .paises span{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A7ADB6;white-space:nowrap;display:flex;align-items:center;gap:26px}
+  .paises span::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--red);opacity:.6}
+  @keyframes desliza{to{transform:translateX(-50%)}}
+  footer{text-align:center;font-size:11.5px;color:#A7ADB6;margin-top:16px}
+
+  /* ---------- exito ---------- */
+  #exito{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;pointer-events:none;visibility:hidden}
+  #exito.on{pointer-events:auto;visibility:visible}
+  .telon{position:absolute;width:30px;height:30px;border-radius:50%;
+         background:radial-gradient(circle at 30% 30%,#FF4558,var(--red) 45%,var(--red-dark));transform:scale(0)}
+  #exito.on .telon{animation:telon .9s cubic-bezier(.7,0,.2,1) forwards}
+  @keyframes telon{to{transform:scale(90)}}
+  #confeti{position:absolute;inset:0;width:100%;height:100%}
+  .exito-caja{position:relative;text-align:center;color:#fff;padding:0 26px;max-width:420px}
+  .sello{width:132px;height:132px;margin:0 auto 22px;position:relative}
+  .sello svg{width:100%;height:100%;overflow:visible}
+  .sello .aro{stroke-dasharray:380;stroke-dashoffset:380}
+  .sello .palomita{stroke-dasharray:90;stroke-dashoffset:90}
+  #exito.on .sello{animation:pop .6s .75s cubic-bezier(.2,1.6,.4,1) both}
+  #exito.on .sello .aro{animation:trazo 1s .9s cubic-bezier(.65,0,.35,1) forwards}
+  #exito.on .sello .palomita{animation:trazo .55s 1.55s cubic-bezier(.65,0,.35,1) forwards}
+  .sello::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:2px solid rgba(255,255,255,.5);opacity:0}
+  #exito.on .sello::after{animation:anillo 1.6s 1.8s ease-out infinite}
+  @keyframes anillo{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+  .exito-caja h2{font-size:34px;font-weight:900;letter-spacing:-.03em;line-height:1.08;opacity:0;transform:translateY(20px)}
+  .exito-caja p{font-size:15.5px;line-height:1.55;opacity:0;transform:translateY(20px);margin-top:12px;color:rgba(255,255,255,.92)}
+  .exito-caja .marca-blanca{margin-top:26px;font-size:12px;font-weight:800;letter-spacing:.28em;opacity:0}
+  .exito-caja .marca-blanca svg{display:block;margin:0 auto 4px;width:120px}
+  #exito.on h2{animation:subir .7s 1.7s cubic-bezier(.2,.9,.3,1) forwards}
+  #exito.on p{animation:subir .7s 1.9s cubic-bezier(.2,.9,.3,1) forwards}
+  #exito.on .marca-blanca{animation:aparecer .8s 2.3s forwards}
+  .otra{margin-top:26px;background:rgba(255,255,255,.16);color:#fff;border:1.5px solid rgba(255,255,255,.55);border-radius:99px;
+        padding:12px 22px;font:700 14px 'Inter',sans-serif;cursor:pointer;opacity:0;backdrop-filter:blur(6px)}
+  #exito.on .otra{animation:aparecer .6s 2.8s forwards}
+
+  .aviso{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,140%);z-index:60;
+         background:var(--ink);color:#fff;font-size:14px;font-weight:600;padding:14px 18px;border-radius:14px;
+         box-shadow:0 18px 40px -12px rgba(0,0,0,.4);transition:transform .45s cubic-bezier(.2,1.3,.4,1), visibility .45s;visibility:hidden;width:max-content;max-width:calc(100% - 32px)}
+  .aviso.on{transform:translate(-50%,0);visibility:visible}
+
+  @media (min-width:420px){h1{font-size:30px}.tarjeta{padding:30px 26px 24px}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<canvas id="red" aria-hidden="true"></canvas>
+
+<!-- ============ INTRO AL ESCANEAR ============ -->
+<div id="intro" aria-hidden="true">
+  <div class="onda"></div><div class="onda"></div><div class="onda"></div>
+  <div class="logo-intro">
+    <svg viewBox="0 0 300 80" width="100%">
+      <path class="arco" d="M18 74 Q150 -34 282 74" fill="none" stroke="#E8192C" stroke-width="11" stroke-linecap="round"/>
+    </svg>
+    <div class="marca" id="marcaIntro"></div>
+  </div>
+  <div class="personas" id="personasIntro"></div>
+  <div class="intro-sub">Bienvenido</div>
+  <div class="saltar">Toca para continuar</div>
+</div>
+
+<!-- ============ PAGINA ============ -->
+<main>
+  <header>
+    <div class="gauge">
+      <svg viewBox="0 0 300 80">
+        <path class="fondo-arco" d="M18 74 Q150 -34 282 74" fill="none" stroke-width="11" stroke-linecap="round"/>
+        <path class="prog" id="prog" d="M18 74 Q150 -34 282 74" fill="none" stroke="#E8192C" stroke-width="11" stroke-linecap="round"/>
+      </svg>
+      <div class="gauge-marca">THE PEOPLE COMPANY</div>
+    </div>
+    <div class="contador"><span class="pts" id="pts"><i></i><i></i><i></i><i></i></span><span><b id="cuenta">0</b> de 4 datos listos</span></div>
+  </header>
+
+  <section class="tarjeta">
+    <span class="chip"><span class="vivo"></span>Registro</span>
+    <h1>Hola, queremos <em>conocerte</em></h1>
+    <p class="intro-txt">Completa tus datos y forma parte de la red de The People Company. Solo toma unos segundos.</p>
+
+    <form id="form" novalidate autocomplete="on">
+      <div class="fila">
+        <div class="campo" data-tipo="nombre">
+          <input id="nombre" name="nombre" type="text" placeholder=" " autocomplete="given-name" maxlength="60" required>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <label for="nombre">Nombre<span class="req">*</span></label>
+          <svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#37C4F3"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="msg">Escribe tu nombre</div>
+        </div>
+        <div class="campo" data-tipo="nombre">
+          <input id="apellido" name="apellido" type="text" placeholder=" " autocomplete="family-name" maxlength="60" required>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.4 3-5.4 6.5-5.4S15.5 16.6 15.5 20"/><path d="M16 4.5a3.5 3.5 0 010 7M18.5 14.8c1.9.7 3 2.4 3 4.7"/></svg>
+          <label for="apellido">Apellido<span class="req">*</span></label>
+          <svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#37C4F3"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="msg">Escribe tu apellido</div>
+        </div>
+      </div>
+      <div class="campo c-empresa" data-tipo="texto">
+        <input id="empresa" name="empresa" type="text" placeholder=" " autocomplete="organization" maxlength="100" required>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/></svg>
+        <label for="empresa">Nombre de la empresa<span class="req">*</span></label>
+        <svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#37C4F3"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="msg">Escribe el nombre de tu empresa</div>
+      </div>
+      <div class="campo c-correo" data-tipo="correo">
+        <input id="correo" name="correo" type="email" inputmode="email" placeholder=" " autocomplete="email" maxlength="120" autocapitalize="off" spellcheck="false" required>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>
+        <label for="correo">Correo electrónico<span class="req">*</span></label>
+        <svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#37C4F3"/><path d="M7 12.5l3.2 3L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="msg">Escribe un correo válido, por ejemplo nombre@empresa.com</div>
+      </div>
+      <input class="trampa" type="text" name="sitio" id="sitio" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <button class="btn" id="btn" type="submit">
+        <span class="txt">Enviar mis datos</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="spin"></span>
+      </button>
+      <div class="privado">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        Tus datos se guardan de forma segura
+      </div>
+    </form>
+  </section>
+
+  <div class="paises"><div class="pista" id="pista"></div></div>
+  <footer>© <span id="anio"></span> The People Company</footer>
+</main>
+
+<!-- ============ EXITO ============ -->
+<div id="exito" aria-live="polite">
+  <div class="telon" id="telon"></div>
+  <canvas id="confeti"></canvas>
+  <div class="exito-caja">
+    <div class="sello">
+      <svg viewBox="0 0 132 132">
+        <circle class="aro" cx="66" cy="66" r="58" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-width="6" stroke-linecap="round" transform="rotate(-90 66 66)"/>
+        <path class="palomita" d="M42 68l16 15 32-34" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 id="gracias">¡Gracias!</h2>
+    <p>Tus datos fueron registrados con éxito.<br>Bienvenido a la red de The People Company.</p>
+    <div class="marca-blanca">
+      <svg viewBox="0 0 300 80"><path d="M18 74 Q150 -34 282 74" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/></svg>
+      THE PEOPLE COMPANY
+    </div>
+    <button class="otra" id="otra" type="button">Registrar a otra persona</button>
+  </div>
+</div>
+
+<div class="aviso" id="aviso" role="alert"></div>
+
+<script>
+/* =========================================================
+   CONFIGURACION: pega aqui la URL de tu Apps Script (termina en /exec)
+   ========================================================= */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjCLMEeCeUTbfHLG5N02p7MCetiJoWlLGsxmNbA1gwEdq5W2vE_xJOC6S_uY_rElpVuQ/exec';
+
+const PAISES = ['Guatemala','El Salvador','Honduras','Nicaragua','Costa Rica','Panamá','República Dominicana','Colombia','Estados Unidos'];
+const ROJO = '#E8192C', AZUL = '#37C4F3';
+const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.getElementById('anio').textContent = new Date().getFullYear();
+
+/* ---------- intro ---------- */
+(function intro(){
+  const marca = document.getElementById('marcaIntro');
+  [...'THE PEOPLE COMPANY'].forEach((ch, i) => {
+    const s = document.createElement('span');
+    s.textContent = ch === ' ' ? ' ' : ch;
+    s.style.animationDelay = (0.75 + i * 0.045) + 's';
+    marca.appendChild(s);
+  });
+  const per = document.getElementById('personasIntro');
+  const colores = [ROJO, AZUL, ROJO, AZUL, ROJO];
+  colores.forEach((c, i) => {
+    per.insertAdjacentHTML('beforeend',
+      `<svg viewBox="0 0 24 24" style="animation-delay:${1.55 + i * .09}s"><circle cx="12" cy="7" r="4.2" fill="${c}"/><path d="M3.5 22c0-5 3.8-8 8.5-8s8.5 3 8.5 8z" fill="${c}"/></svg>`);
+  });
+  const intro = document.getElementById('intro');
+  let cerrado = false;
+  const cerrar = () => {
+    if (cerrado) return; cerrado = true;
+    intro.classList.add('fuera');
+    document.body.classList.add('listo');
+    setTimeout(actualizar, 700);
+  };
+  intro.addEventListener('click', cerrar);
+  setTimeout(cerrar, reducido ? 300 : 2900);
+})();
+
+/* ---------- marquesina de paises ---------- */
+document.getElementById('pista').innerHTML = [...PAISES, ...PAISES].map(p => `<span>${p}</span>`).join('');
+
+/* ---------- fondo: red de personas conectadas ---------- */
+(function red(){
+  const cv = document.getElementById('red'), cx = cv.getContext('2d');
+  let w, h, nodos = [];
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  function tam(){
+    w = innerWidth; h = innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(Math.min(46, w * h / 16000));
+    nodos = Array.from({length: n}, (_, i) => ({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
+      r: 1.6 + Math.random() * 2.2, c: i % 4 === 0 ? AZUL : ROJO
+    }));
+  }
+  function cuadro(){
+    cx.clearRect(0, 0, w, h);
+    for (const a of nodos){
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < 0 || a.x > w) a.vx *= -1;
+      if (a.y < 0 || a.y > h) a.vy *= -1;
+    }
+    for (let i = 0; i < nodos.length; i++){
+      for (let j = i + 1; j < nodos.length; j++){
+        const a = nodos[i], b = nodos[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < 120){
+          cx.strokeStyle = `rgba(232,25,44,${(1 - d / 120) * .13})`;
+          cx.lineWidth = 1; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke();
+        }
+      }
+    }
+    for (const a of nodos){
+      cx.globalAlpha = .35; cx.fillStyle = a.c;
+      cx.beginPath(); cx.arc(a.x, a.y, a.r, 0, 7); cx.fill();
+    }
+    cx.globalAlpha = 1;
+    if (!reducido) requestAnimationFrame(cuadro);
+  }
+  addEventListener('resize', tam); tam(); cuadro();
+})();
+
+/* ---------- validacion ---------- */
+const form = document.getElementById('form');
+const campos = [...form.querySelectorAll('.campo')];
+const reCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const reNombre = /^[A-Za-zÀ-ÖØ-öø-ÿÑñ' .-]{2,}$/;
+
+function valido(campo){
+  const v = campo.querySelector('input').value.trim();
+  const t = campo.dataset.tipo;
+  if (t === 'correo') return reCorreo.test(v);
+  if (t === 'nombre') return reNombre.test(v);
+  return v.length >= 2;
+}
+function actualizar(){
+  const listos = campos.filter(valido).length;
+  document.getElementById('cuenta').textContent = listos;
+  [...document.querySelectorAll('#pts i')].forEach((p, i) => p.classList.toggle('on', i < listos));
+  document.getElementById('prog').style.strokeDashoffset = 420 - 420 * (listos / 4);
+}
+campos.forEach(c => {
+  const inp = c.querySelector('input');
+  inp.addEventListener('input', () => {
+    c.classList.toggle('ok', valido(c));
+    if (c.classList.contains('error') && valido(c)) c.classList.remove('error');
+    actualizar();
+  });
+  inp.addEventListener('blur', () => {
+    if (inp.value.trim() && !valido(c)) marcarError(c);
+  });
+});
+function marcarError(c){
+  c.classList.remove('error'); void c.offsetWidth; c.classList.add('error');
+}
+
+/* ---------- limpieza de datos ---------- */
+const titulo = s => s.trim().replace(/\s+/g, ' ').toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
+const limpio = s => s.trim().replace(/\s+/g, ' ');
+
+/* ---------- envio ---------- */
+function enviar(datos){
+  if (window.google && google.script && google.script.run){
+    return new Promise((ok, mal) => google.script.run.withSuccessHandler(ok).withFailureHandler(mal).registrar(datos));
+  }
+  if (!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL)) return Promise.reject(new Error('Falta configurar la URL del Apps Script'));
+  return fetch(SCRIPT_URL, {method: 'POST', body: new URLSearchParams(datos)})
+    .then(r => r.json())
+    .then(j => { if (!j.ok) throw new Error(j.error || 'No se pudo guardar'); return j; });
+}
+
+function aviso(t){
+  const a = document.getElementById('aviso');
+  a.textContent = t; a.classList.add('on');
+  clearTimeout(aviso.t); aviso.t = setTimeout(() => a.classList.remove('on'), 4200);
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const malos = campos.filter(c => !valido(c));
+  if (malos.length){
+    malos.forEach(marcarError);
+    malos[0].querySelector('input').focus();
+    navigator.vibrate && navigator.vibrate(60);
+    aviso('Completa todos los campos para continuar');
+    return;
+  }
+  if (document.getElementById('sitio').value) return; // bot
+  const datos = {
+    nombre: titulo(form.nombre.value),
+    apellido: titulo(form.apellido.value),
+    empresa: limpio(form.empresa.value),
+    correo: form.correo.value.trim().toLowerCase()
+  };
+  const btn = document.getElementById('btn');
+  btn.classList.add('cargando');
+  try {
+    await enviar(datos);
+    celebrar(datos.nombre.split(' ')[0]);
+  } catch (err) {
+    aviso(err && err.message === 'Falta configurar la URL del Apps Script'
+      ? err.message : 'No pudimos enviar tus datos. Revisa tu conexión e intenta de nuevo.');
+  } finally {
+    btn.classList.remove('cargando');
+  }
+});
+
+/* ---------- celebracion ---------- */
+function celebrar(nombre){
+  const ex = document.getElementById('exito');
+  const r = document.getElementById('btn').getBoundingClientRect();
+  const telon = document.getElementById('telon');
+  telon.style.left = (r.left + r.width / 2 - 15) + 'px';
+  telon.style.top = (r.top + r.height / 2 - 15) + 'px';
+  telon.style.position = 'fixed';
+  document.getElementById('gracias').textContent = `¡Gracias, ${nombre}!`;
+  ex.classList.add('on');
+  navigator.vibrate && navigator.vibrate([40, 60, 40, 60, 120]);
+  setTimeout(confeti, 650);
+}
+
+function confeti(){
+  if (reducido) return;
+  const cv = document.getElementById('confeti'), cx = cv.getContext('2d');
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const w = innerWidth, h = innerHeight;
+  cv.width = w * dpr; cv.height = h * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const colores = ['#FFFFFF', AZUL, '#FFD1D6', '#FFFFFF', '#9BE3FA'];
+  const piezas = Array.from({length: 170}, (_, i) => {
+    const ang = Math.random() * Math.PI * 2, vel = 6 + Math.random() * 11;
+    return {
+      x: w / 2, y: h * .42, vx: Math.cos(ang) * vel, vy: Math.sin(ang) * vel - 6,
+      rot: Math.random() * 6, vr: (Math.random() - .5) * .35,
+      t: i % 9 === 0 ? 'persona' : (i % 3 === 0 ? 'circulo' : 'tira'),
+      s: 5 + Math.random() * 7, c: colores[i % colores.length], vida: 0
+    };
+  });
+  function persona(p){
+    cx.beginPath(); cx.arc(0, -p.s * .55, p.s * .42, 0, 7); cx.fill();
+    cx.beginPath(); cx.ellipse(0, p.s * .45, p.s * .62, p.s * .5, 0, Math.PI, 0); cx.fill();
+  }
+  let f = 0;
+  (function paso(){
+    cx.clearRect(0, 0, w, h);
+    let vivos = 0;
+    for (const p of piezas){
+      p.vida++; p.vx *= .985; p.vy = p.vy * .985 + .32; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      if (p.y > h + 40) continue;
+      vivos++;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.fillStyle = p.c;
+      cx.globalAlpha = Math.max(0, 1 - p.vida / 260);
+      if (p.t === 'persona'){ cx.scale(1.5, 1.5); persona(p); }
+      else if (p.t === 'circulo'){ cx.beginPath(); cx.arc(0, 0, p.s * .4, 0, 7); cx.fill(); }
+      else cx.fillRect(-p.s / 2, -p.s / 5, p.s, p.s / 2.5);
+      cx.restore();
+    }
+    if (vivos && ++f < 420) requestAnimationFrame(paso); else cx.clearRect(0, 0, w, h);
+  })();
+}
+
+document.getElementById('otra').addEventListener('click', () => {
+  form.reset();
+  campos.forEach(c => c.classList.remove('ok', 'error'));
+  actualizar();
+  const ex = document.getElementById('exito');
+  ex.style.transition = 'opacity .5s'; ex.style.opacity = 0;
+  setTimeout(() => { ex.classList.remove('on'); ex.style.opacity = ''; ex.style.transition = ''; }, 500);
+  scrollTo({top: 0, behavior: 'smooth'});
+});
+</script>
+</body>
+</html>
