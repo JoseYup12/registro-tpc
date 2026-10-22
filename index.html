@@ -151,6 +151,8 @@
   @keyframes girar{to{transform:rotate(360deg)}}
   .privado{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:#9AA0A8;margin-top:12px}
   .privado svg{width:13px;height:13px}
+  .espera{font-size:13px;font-weight:600;color:var(--red);text-align:center;max-height:0;opacity:0;overflow:hidden;transition:max-height .3s, opacity .3s}
+  .espera.on{max-height:40px;opacity:1}
 
   .paises{margin-top:26px;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);
           -webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);opacity:0}
@@ -275,6 +277,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         <span class="spin"></span>
       </button>
+      <div class="espera" id="espera">Guardando tus datos, un momento…</div>
       <div class="privado">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
         Tus datos se guardan de forma segura
@@ -346,6 +349,11 @@ document.getElementById('anio').textContent = new Date().getFullYear();
   intro.addEventListener('click', cerrar);
   setTimeout(cerrar, reducido ? 300 : 2900);
 })();
+
+/* ---------- despierta el servicio de Google mientras la persona llena el formulario ---------- */
+if (!(window.google && google.script) && /^https:\/\/script\.google\.com\//.test(SCRIPT_URL)){
+  fetch(SCRIPT_URL, {mode: 'no-cors', cache: 'no-store'}).catch(() => {});
+}
 
 /* ---------- marquesina de paises ---------- */
 document.getElementById('pista').innerHTML = [...PAISES, ...PAISES].map(p => `<span>${p}</span>`).join('');
@@ -435,7 +443,10 @@ function enviar(datos){
     return new Promise((ok, mal) => google.script.run.withSuccessHandler(ok).withFailureHandler(mal).registrar(datos));
   }
   if (!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL)) return Promise.reject(new Error('Falta configurar la URL del Apps Script'));
-  return fetch(SCRIPT_URL, {method: 'POST', body: new URLSearchParams(datos)})
+  const ctrl = new AbortController();
+  const limite = setTimeout(() => ctrl.abort(), 60000);
+  return fetch(SCRIPT_URL, {method: 'POST', body: new URLSearchParams(datos), signal: ctrl.signal})
+    .finally(() => clearTimeout(limite))
     .then(r => r.json())
     .then(j => { if (!j.ok) throw new Error(j.error || 'No se pudo guardar'); return j; });
 }
@@ -465,6 +476,8 @@ form.addEventListener('submit', async e => {
   };
   const btn = document.getElementById('btn');
   btn.classList.add('cargando');
+  const espera = document.getElementById('espera');
+  const tEspera = setTimeout(() => espera.classList.add('on'), 2500);
   try {
     await enviar(datos);
     celebrar(datos.nombre.split(' ')[0]);
@@ -472,6 +485,8 @@ form.addEventListener('submit', async e => {
     aviso(err && err.message === 'Falta configurar la URL del Apps Script'
       ? err.message : 'No pudimos enviar tus datos. Revisa tu conexión e intenta de nuevo.');
   } finally {
+    clearTimeout(tEspera);
+    espera.classList.remove('on');
     btn.classList.remove('cargando');
   }
 });
